@@ -1,11 +1,13 @@
+'use server'
+
 import data from '../lib/data';
 
-function getLeaves() {
+export default async function getLeaves() {
   return data;
 }
 
-const leaveServices = {
-  getLeaves,
-};
+// const leaveServices = {
+//   getLeaves,
+// };
 
-export default leaveServices;
+// export default leaveServices;

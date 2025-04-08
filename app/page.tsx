@@ -6,22 +6,28 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import leavesServices from './services/leave';
 import { format } from 'date-fns';
+import getLeaves from './services/leave';
 
 export default function Home() {
   const [leaves, setLeaves] = useState([]);
 
   useEffect(() => {
-    const leaves = leavesServices.getLeaves().map((x) => {
-      return {
-        title: x.name,
-        start: format(x.from, 'yyyy-MM-dd'),
-        end: format(x.to, 'yyyy-MM-dd'),
-        backgroundColor: x.color,
-        borderColor: x.color,
-        textColor: 'black',
-      };
-    });
-    setLeaves(leaves);
+    async function fetchLeaves() {
+      let response = await getLeaves();
+      const leaves = response.map((x) => {
+        return {
+          title: x.name,
+          start: format(x.from, 'yyyy-MM-dd'),
+          end: format(x.to, 'yyyy-MM-dd'),
+          backgroundColor: x.color,
+          borderColor: x.color,
+          textColor: 'black',
+        };
+      });
+      setLeaves(leaves);
+    }
+
+    fetchLeaves();
   }, []);
 
   return (
