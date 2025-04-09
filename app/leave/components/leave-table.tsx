@@ -1,8 +1,9 @@
 import { useEffect } from 'react';
 import { format } from 'date-fns';
+import { Leave, LeaveList } from '@/app/lib/types';
 
-export default function LeaveTable({ leaveList }) {
-  useEffect(() => {}, [leaveList]);
+export default function LeaveTable({list}: LeaveList) {
+  useEffect(() => {}, [list]);
 
   return (
     <div className="relative overflow-x-auto shadow-md sm:rounded-lg mt-5">
@@ -21,7 +22,7 @@ export default function LeaveTable({ leaveList }) {
           </tr>
         </thead>
         <tbody>
-          {leaveList.map((x) => (
+          {list.map((x) => (
             <>
               <tr className="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700 border-gray-200">
                 <th

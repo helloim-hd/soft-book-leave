@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Calendar } from '@demark-pro/react-booking-calendar';
+import { Calendar as FullCalendar } from '@demark-pro/react-booking-calendar';
 
 import '@demark-pro/react-booking-calendar/dist/react-booking-calendar.css';
 
@@ -25,10 +25,10 @@ export default function Calendar() {
   const [selectedDates, setSelectedDates] = useState([]);
 
   return (
-    <Calendar
+    <FullCalendar
       selected={selectedDates}
       reserved={reserved}
-      onChange={setSelectedDates}
+      onChange={() => setSelectedDates}
     />
   );
 }

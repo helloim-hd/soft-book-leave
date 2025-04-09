@@ -7,9 +7,10 @@ import { useEffect, useState } from 'react';
 import leavesServices from './services/leave';
 import { format } from 'date-fns';
 import getLeaves from './services/leave';
+import { CalendarDetails } from './lib/types';
 
 export default function Home() {
-  const [leaves, setLeaves] = useState([]);
+  const [leaves, setLeaves] = useState<CalendarDetails[]>([]);
 
   useEffect(() => {
     async function fetchLeaves() {

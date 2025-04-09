@@ -4,12 +4,13 @@ import { Datepicker } from 'flowbite-react';
 import { useState } from 'react';
 import LeaveTable from './components/leave-table';
 import Link from 'next/link';
+import { Leave as LeaveType } from '../lib/types';
 
 export default function Leave() {
   const [from, setFrom] = useState('');
   const [to, setTo] = useState('');
   const [name, setName] = useState('');
-  const [list, setList] = useState([]);
+  const [list, setList] = useState<LeaveType[]>([]);
 
   function handleFromDatepicker(date: string) {
     setFrom(date);
@@ -65,13 +66,13 @@ export default function Leave() {
           <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
             From
           </label>
-          <Datepicker onChange={handleFromDatepicker} />
+          <Datepicker onChange={() => handleFromDatepicker} />
         </div>
         <div>
           <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
             To
           </label>
-          <Datepicker onChange={handleToDatepicker} />
+          <Datepicker onChange={() => handleToDatepicker} />
         </div>
       </div>
       <button
@@ -81,7 +82,7 @@ export default function Leave() {
       >
         Book
       </button>
-      <LeaveTable leaveList={list} />
+      <LeaveTable list={list} />
     </div>
   );
 }
