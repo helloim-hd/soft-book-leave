@@ -1,11 +1,11 @@
 'use server'
 
 import { neon } from '@neondatabase/serverless';
+import { LeaveDB, LeaveWithUserDB } from './types';
 
-const sql = neon('postgres://neondb_owner:npg_A7i2VXOglauM@ep-soft-pine-a1c3he82-pooler.ap-southeast-1.aws.neon.tech/neondb')
+const sql = neon(process.env.DATABASE_URL)
 
 export async function fetchLeaves() {
-  console.log("here")
   try {
     const data = await sql<LeaveWithUserDB[]>`
     SELECT users.name, users.color, users.text_color, leaves.from, leaves.to
@@ -18,5 +18,22 @@ export async function fetchLeaves() {
   } catch (error) {
     console.error('Database Error: ', error);
     throw new Error('Failed to fetch leave data.')
+  }
+}
+
+export async function fetchTakenLeaves(from: string, to: string) {
+  try {
+    const data = await sql<LeaveDB[]>`
+    SELECT *
+    FROM leaves 
+    WHERE ('${from}' <= leaves.from AND '${to}' >= leaves.from)
+    OR ('${from}' < leaves.to AND '${to}' >= leaves.to)
+    OR ('${from}' >= leaves.from AND '${to}' < leaves.to)
+    `
+    return data;
+
+  } catch (error) {
+    console.error('Database Error: ', error);
+    throw new Error('Failed to check taken leaves.')
   }
 }

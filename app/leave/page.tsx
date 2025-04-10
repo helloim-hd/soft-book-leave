@@ -4,7 +4,9 @@ import { Datepicker } from 'flowbite-react';
 import { useState } from 'react';
 import LeaveTable from './components/leave-table';
 import Link from 'next/link';
+import { format } from 'date-fns';
 import { Leave as LeaveType } from '../lib/types';
+import { fetchTakenLeaves } from '@/app/lib/data';
 
 export default function Leave() {
   const [from, setFrom] = useState('');
@@ -13,26 +15,25 @@ export default function Leave() {
   const [list, setList] = useState<LeaveType[]>([]);
 
   function handleFromDatepicker(date: string) {
-    setFrom(date);
+    setFrom(format(date, 'yyyy-MM-dd'));
   }
 
   function handleToDatepicker(date: string) {
-    setTo(date);
+    setTo(format(date, 'yyyy-MM-dd'));
   }
 
   function addLeave() {
+    console.log("test")
     const details = {
       name,
       from,
       to,
     };
-    // check if date can be booked . if yes, set list else show error message
-    for (let x of list) {
-      if ((from >= x.from && from <= x.to) || (to >= x.from && to <= x.to)) {
-        console.log('cannot book');
-        break;
-      }
+    const takenLeaves = fetchTakenLeaves(from, to);
+    if (takenLeaves.length >= 2) {
+      alert(`No SLOTS!`)
     }
+    
     setList([...list, details]);
     console.log(list);
   }
@@ -66,7 +67,7 @@ export default function Leave() {
           <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
             From
           </label>
-          <Datepicker onChange={() => handleFromDatepicker} />
+          <Datepicker onChange={() => handleFromDatepicker}/>
         </div>
         <div>
           <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
@@ -78,7 +79,7 @@ export default function Leave() {
       <button
         type="button"
         className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 mt-4 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
-        onClick={addLeave}
+        onClick={() => addLeave}
       >
         Book
       </button>

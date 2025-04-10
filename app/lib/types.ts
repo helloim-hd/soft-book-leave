@@ -17,6 +17,12 @@ export type CalendarDetails = {
     textColor: string
 }
 
+export type LeaveDB = {
+    userId: number,
+    from: string, 
+    to: string
+}
+
 export type LeaveWithUserDB = {
     name: string, 
     from: string, 
