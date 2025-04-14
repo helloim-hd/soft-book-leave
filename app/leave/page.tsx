@@ -7,31 +7,48 @@ import Link from 'next/link';
 import { format } from 'date-fns';
 import { Leave as LeaveType } from '../lib/types';
 import { fetchTakenLeaves } from '@/app/lib/data';
+import { NoSlotModal } from './components/no-slot-modal';
 
 export default function Leave() {
-  const [from, setFrom] = useState('');
-  const [to, setTo] = useState('');
-  const [name, setName] = useState('');
+  const [from, setFrom] = useState<Date>(new Date());
+  const [to, setTo] = useState<Date>(new Date());
+  const [name, setName] = useState(''); 
   const [list, setList] = useState<LeaveType[]>([]);
+  const [showNoSlot, setShowNoSlot] = useState<boolean>(false);
+  const [takenDates, setTakenDates] = useState<LeaveType[]>([])
 
-  function handleFromDatepicker(date: string) {
-    setFrom(format(date, 'yyyy-MM-dd'));
+  function formatDate(date: Date) {
+    return format(date, 'yyyy-MM-dd');
   }
 
-  function handleToDatepicker(date: string) {
-    setTo(format(date, 'yyyy-MM-dd'));
+  function handleFromDatepicker(date: Date | null) {
+    if (!date) date = new Date();
+    setFrom(date);
   }
 
-  function addLeave() {
-    console.log("test")
+  function handleToDatepicker(date: Date | null) {
+    if (!date) date = new Date();
+    setTo(date);
+  }
+
+  async function addLeave() {
+
     const details = {
       name,
       from,
       to,
     };
-    const takenLeaves = fetchTakenLeaves(from, to);
+    const takenLeaves = await fetchTakenLeaves(formatDate(from), formatDate(to));
+
     if (takenLeaves.length >= 2) {
-      alert(`No SLOTS!`)
+      handleNoSlotModal();
+      const takenDates: LeaveType[] = takenLeaves.map((leave) => {
+        return {
+          from: format(leave.from, 'dd MMMM yyyy'),
+          to: format(leave.to, 'dd MMMM yyyy'),
+        }
+      })
+      setTakenDates(takenDates);
     }
     
     setList([...list, details]);
@@ -41,6 +58,12 @@ export default function Leave() {
   function handleNameChange(name: string) {
     // alert(name);
     setName(name);
+  }
+
+  function handleNoSlotModal() {
+    console.log(!showNoSlot)
+    setShowNoSlot(!showNoSlot);
+  
   }
 
   return (
@@ -67,23 +90,24 @@ export default function Leave() {
           <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
             From
           </label>
-          <Datepicker onChange={() => handleFromDatepicker}/>
+          <Datepicker onChange={handleFromDatepicker}/>
         </div>
         <div>
           <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
             To
           </label>
-          <Datepicker onChange={() => handleToDatepicker} />
+          <Datepicker onChange={handleToDatepicker} />
         </div>
       </div>
       <button
         type="button"
         className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 mt-4 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
-        onClick={() => addLeave}
+        onClick={addLeave}
       >
         Book
       </button>
       <LeaveTable list={list} />
+      <NoSlotModal openModal={showNoSlot} handleModal={handleNoSlotModal} takenDates={takenDates} />
     </div>
   );
 }

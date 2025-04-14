@@ -26,9 +26,9 @@ export async function fetchTakenLeaves(from: string, to: string) {
     const data = await sql<LeaveDB[]>`
     SELECT *
     FROM leaves 
-    WHERE ('${from}' <= leaves.from AND '${to}' >= leaves.from)
-    OR ('${from}' < leaves.to AND '${to}' >= leaves.to)
-    OR ('${from}' >= leaves.from AND '${to}' < leaves.to)
+    WHERE (${from} <= leaves.from AND ${to} >= leaves.from)
+    OR (${from} < leaves.to AND ${to} >= leaves.to)
+    OR (${from} >= leaves.from AND ${to} < leaves.to)
     `
     return data;
 

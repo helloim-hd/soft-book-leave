@@ -1,5 +1,5 @@
 export type Leave = {
-    name: string,
+    name?: string,
     from: string,
     to: string
 }

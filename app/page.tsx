@@ -15,6 +15,7 @@ export default function Home() {
   useEffect(() => {
     async function fetchLeaves() {
       const response = await fetchLeavesDB();
+      console.log(response)
       const leaves = response.map((x) => {
         return {
           title: x.name,
