@@ -30,3 +30,8 @@ export type LeaveWithUserDB = {
     color: string, 
     textColor: string
 }
+
+export type TakenLeaveDB = {
+    date: string, 
+    count: number | string
+}

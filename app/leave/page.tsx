@@ -5,8 +5,8 @@ import { useState } from 'react';
 import LeaveTable from './components/leave-table';
 import Link from 'next/link';
 import { format } from 'date-fns';
-import { Leave as LeaveType } from '../lib/types';
-import { fetchTakenLeaves } from '@/app/lib/data';
+import { Leave as LeaveType, TakenLeaveDB } from '../lib/types';
+import { fetchTakenLeaves, addLeave } from '@/app/lib/data';
 import { NoSlotModal } from './components/no-slot-modal';
 
 export default function Leave() {
@@ -15,7 +15,8 @@ export default function Leave() {
   const [name, setName] = useState(''); 
   const [list, setList] = useState<LeaveType[]>([]);
   const [showNoSlot, setShowNoSlot] = useState<boolean>(false);
-  const [takenDates, setTakenDates] = useState<LeaveType[]>([])
+  const [takenLeaves, setTakenLeaves] = useState<TakenLeaveDB[]>([]);
+  const [minToDate, setMinToDate] = useState<Date>(new Date());
 
   function formatDate(date: Date) {
     return format(date, 'yyyy-MM-dd');
@@ -24,6 +25,7 @@ export default function Leave() {
   function handleFromDatepicker(date: Date | null) {
     if (!date) date = new Date();
     setFrom(date);
+    setMinToDate(date);
   }
 
   function handleToDatepicker(date: Date | null) {
@@ -31,37 +33,30 @@ export default function Leave() {
     setTo(date);
   }
 
-  async function addLeave() {
-
+  async function handleLeaveBooking() {
     const details = {
       name,
       from,
       to,
     };
-    const takenLeaves = await fetchTakenLeaves(formatDate(from), formatDate(to));
-
-    if (takenLeaves.length >= 2) {
+    const takenLeaves: TakenLeaveDB[] = await fetchTakenLeaves(formatDate(from), formatDate(to));
+    if (takenLeaves.length > 0) {
       handleNoSlotModal();
-      const takenDates: LeaveType[] = takenLeaves.map((leave) => {
-        return {
-          from: format(leave.from, 'dd MMMM yyyy'),
-          to: format(leave.to, 'dd MMMM yyyy'),
-        }
-      })
-      setTakenDates(takenDates);
+      setTakenLeaves(takenLeaves);
+
+    } else {
+      await addLeave(from, to);
+      setList([...list, details]);
     }
     
-    setList([...list, details]);
-    console.log(list);
+    
   }
 
   function handleNameChange(name: string) {
-    // alert(name);
     setName(name);
   }
 
   function handleNoSlotModal() {
-    console.log(!showNoSlot)
     setShowNoSlot(!showNoSlot);
   
   }
@@ -90,24 +85,24 @@ export default function Leave() {
           <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
             From
           </label>
-          <Datepicker onChange={handleFromDatepicker}/>
+          <Datepicker onChange={handleFromDatepicker} minDate={new Date()} />
         </div>
         <div>
           <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
             To
           </label>
-          <Datepicker onChange={handleToDatepicker} />
+          <Datepicker onChange={handleToDatepicker} minDate={from} />
         </div>
       </div>
       <button
         type="button"
         className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 mt-4 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
-        onClick={addLeave}
+        onClick={handleLeaveBooking}
       >
         Book
       </button>
       <LeaveTable list={list} />
-      <NoSlotModal openModal={showNoSlot} handleModal={handleNoSlotModal} takenDates={takenDates} />
+      <NoSlotModal openModal={showNoSlot} handleModal={handleNoSlotModal} takenDates={takenLeaves} />
     </div>
   );
 }

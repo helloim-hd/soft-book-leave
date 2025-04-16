@@ -1,11 +1,12 @@
 "use client";
 
-import { Leave } from "@/app/lib/types";
+import { Leave, TakenLeaveDB } from "@/app/lib/types";
 import { Button, Modal, ModalBody, ModalHeader, List, ListItem } from "flowbite-react";
 import { useState } from "react";
 import { HiOutlineExclamationCircle } from "react-icons/hi";
+import { format } from 'date-fns';
 
-export function NoSlotModal({ openModal, handleModal, takenDates }: {openModal: boolean, handleModal: Function, takenDates: Leave[]}) {
+export function NoSlotModal({ openModal, handleModal, takenDates }: {openModal: boolean, handleModal: Function, takenDates: TakenLeaveDB[]}) {
 
 
   return (
@@ -21,7 +22,7 @@ export function NoSlotModal({ openModal, handleModal, takenDates }: {openModal: 
               <List>
                 {takenDates.map(x => (
                     <>
-                      <ListItem>{ x.from } - { x.to} </ListItem>
+                      <ListItem>{format(x.date, 'dd MMMM yyyy')}</ListItem>
                     </>
                 ))
                 }

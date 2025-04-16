@@ -4,7 +4,7 @@ import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import Link from 'next/link';
 import { useEffect, useState, useRef } from 'react';
-import { format } from 'date-fns';
+import { format, addDays } from 'date-fns';
 import { CalendarDetails } from './lib/types';
 import { fetchLeaves as fetchLeavesDB } from '@/app/lib/data';
 
@@ -15,12 +15,11 @@ export default function Home() {
   useEffect(() => {
     async function fetchLeaves() {
       const response = await fetchLeavesDB();
-      console.log(response)
       const leaves = response.map((x) => {
         return {
           title: x.name,
           start: format(x.from, 'yyyy-MM-dd'),
-          end: format(x.to, 'yyyy-MM-dd'),
+          end: format(addDays(x.to, 1), 'yyyy-MM-dd'),
           backgroundColor: x.color,
           borderColor: x.color,
           textColor: 'black',
