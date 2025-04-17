@@ -35,3 +35,10 @@ export type TakenLeaveDB = {
     date: string, 
     count: number | string
 }
+
+export type User = {
+    id: string;
+    name: string;
+    email: string;
+    password: string;
+  };
